@@ -68,6 +68,21 @@ type Status struct {
 	InternalTemp                float64
 	OutputVoltage               float64
 	LineFrequency               float64
+	MaximumLineVoltage          float64
+	MinimumLineVoltage          float64
+	WakeDelay                   float64
+	ShutdownDelay               float64
+	LowBatteryDelay             float64
+	RestorePercent              float64
+	SelfTestInterval            int
+	DIPSwitches                 string
+	Register1                   string
+	Register2                   string
+	Register3                   string
+	ManufactureDate             string
+	NominalOutputVoltage        float64
+	ExternalBatteries           int
+	BadBatteries                int
 }
 
 // parseKV parses an input key/value string in "key : value" format, and sets
@@ -105,6 +120,12 @@ func (s *Status) parseKV(kv string) error {
 	switch k {
 	case keyNumXfers:
 		s.NumberTransfers, err = strconv.Atoi(v)
+	case keySTestI:
+		s.SelfTestInterval, err = strconv.Atoi(v)
+	case keyExtBatts:
+		s.ExternalBatteries, err = strconv.Atoi(v)
+	case keyBadBatts:
+		s.BadBatteries, err = strconv.Atoi(v)
 	case keyNomPower:
 		f := strings.SplitN(v, " ", 2)
 		s.NominalPower, err = strconv.Atoi(f[0])
@@ -159,6 +180,21 @@ const (
 	keyITemp         = "ITEMP"
 	keyOutV          = "OUTPUTV"
 	keyLineFrequency = "LINEFREQ"
+	keyMaxLineV      = "MAXLINEV"
+	keyMinLineV      = "MINLINEV"
+	keyDWake         = "DWAKE"
+	keyDShutD        = "DSHUTD"
+	keyDLowBatt      = "DLOWBATT"
+	keyRetPct        = "RETPCT"
+	keySTestI        = "STESTI"
+	keyDIPSw         = "DIPSW"
+	keyReg1          = "REG1"
+	keyReg2          = "REG2"
+	keyReg3          = "REG3"
+	keyManDate       = "MANDATE"
+	keyNomOutV       = "NOMOUTV"
+	keyExtBatts      = "EXTBATTS"
+	keyBadBatts      = "BADBATTS"
 )
 
 // parseKVString parses a simple string into the appropriate Status field. It
@@ -195,6 +231,16 @@ func (s *Status) parseKVString(k string, v string) bool {
 		s.BatteryDate = v
 	case keyFirmware:
 		s.Firmware = v
+	case keyManDate:
+		s.ManufactureDate = v
+	case keyDIPSw:
+		s.DIPSwitches = v
+	case keyReg1:
+		s.Register1 = v
+	case keyReg2:
+		s.Register2 = v
+	case keyReg3:
+		s.Register3 = v
 	default:
 		return false
 	}
@@ -238,6 +284,20 @@ func (s *Status) parseKVFloat(k string, v string) (bool, error) {
 		s.OutputVoltage, err = parse()
 	case keyLineFrequency:
 		s.LineFrequency, err = parse()
+	case keyMaxLineV:
+		s.MaximumLineVoltage, err = parse()
+	case keyMinLineV:
+		s.MinimumLineVoltage, err = parse()
+	case keyDWake:
+		s.WakeDelay, err = parse()
+	case keyDShutD:
+		s.ShutdownDelay, err = parse()
+	case keyDLowBatt:
+		s.LowBatteryDelay, err = parse()
+	case keyRetPct:
+		s.RestorePercent, err = parse()
+	case keyNomOutV:
+		s.NominalOutputVoltage, err = parse()
 	default:
 		return false, nil
 	}
